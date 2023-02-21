@@ -13,28 +13,28 @@ const run = async()=>{
    
 for(var i = 0 ; i < sheets.length ; i++){
 
-   // const setFlightID = XLSX.utils.sheet_to_json(
-   //    FlightID.Sheets[FlightID.SheetNames[i]])
-
-   //    for(const total of setFlightID){
-   //       console.log(total);
-   //       firebase.setID('FlightID',total)
-   //    }
-
-   const getFlightID = XLSX.utils.sheet_to_json(
+   const setFlightID = XLSX.utils.sheet_to_json(
       FlightID.Sheets[FlightID.SheetNames[i]])
 
-      for(const total of getFlightID){
-
-            const doc1 =  await firebase.getID('FlightID',total)
-
-            // for(const key in doc1){
-            //    console.log(key +` `+ doc1[key])
-            // }
-
-            console.log(doc1);
-           
+      for(const total of setFlightID){
+         console.log(total);
+         firebase.setID('FlightID',total)
       }
+
+   // const getFlightID = XLSX.utils.sheet_to_json(
+   //    FlightID.Sheets[FlightID.SheetNames[i]])
+
+   //    for(const total of getFlightID){
+
+   //          const doc1 =  await firebase.getID('FlightID',total)
+
+   //          // for(const key in doc1){
+   //          //    console.log(key +` `+ doc1[key])
+   //          // }
+
+   //          console.log(doc1);
+           
+   //    }
 
 
    // const setCity = XLSX.utils.sheet_to_json(

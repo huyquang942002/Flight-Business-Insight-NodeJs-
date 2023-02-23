@@ -19,7 +19,7 @@ const asd = ()=>{
 }
 
 const createPDF = (indexFile,flightID,flightName,flightCaptain,totalCustomer,flightRevenue,flightCost
-                  ,from,to)=>{
+                  ,from,to,f)=>{
 
   {
     // Create a document
@@ -59,7 +59,8 @@ const createPDF = (indexFile,flightID,flightName,flightCaptain,totalCustomer,fli
     `Total customer : ${totalCustomer}`
     ,`Revenue : ${(flightRevenue/1000).toFixed(3)} AUD - Operation Cost : ${(flightCost/1000).toFixed(3)} AUD - Profit : ${((flightRevenue/1000).toFixed(3)-(flightCost/1000).toFixed(3)).toFixed(3)} AUD`
                     ,`Date Start : ${from}`
-                    ,`Date End : ${to}`]
+                    ,`Date End : ${to}`
+                  ,`Time flight : ${[...f]}`]
     
     doc
       .fontSize(14)
@@ -140,8 +141,6 @@ const run =async ()=>{
                   const date = moment(dateStart1, 'MM-DD-YYYY');
                   const dateStart = date.format('ddd, MMM D, YYYY');
 
-
-                  
                   
                   dateEnd1 = moment('1900-01-01').add(`${match['Date to']}`-2,'day').format('MM/DD/YYYY');
                   const date1 = moment(dateEnd1,'MM-DD-YYYY');
@@ -154,41 +153,32 @@ const run =async ()=>{
                   const to = ` ${timeEnd} ${dateEnd}`;
 
                   const fromHour = ` ${timeStart} ${dateStart1}`
-                  // console.log(fromHour);
                   const toHour = ` ${timeEnd} ${dateEnd1}`;
-                  
 
 
                   const map = new Map()
                   const map2 = new Map()
 
-                  // for(const c of toHour){
-                    // console.log(c);
-                    // const dateObj = new Date(Date.parse(c));
-                    // console.log(dateObj);
-                    // const isoTime = dateObj.toISOString();
-                    // const d = new Date(isoTime)
-                    // map2.set(c,d)
-                  // }
+                  const dateObj = new Date(Date.parse(toHour));
+                  const isoTime = dateObj.toISOString();
+                  const d = new Date(isoTime)
+                  map2.set(toHour,d)
 
-                  // for(const c of fromHour){
-                  //   const dateObj = new Date(Date.parse(c));
-                  //   const isoTime = dateObj.toISOString();
-                  //   const d = new Date(isoTime)
-                  //   map.set(c,d)
-                  // }
+                  
+                  const b2 = [...map2.values()];
 
-                  // const b = [...map.values()];
+                    const dateObj1 = new Date(Date.parse(fromHour));
+                    const isoTime1 = dateObj1.toISOString();
+                    const d1 = new Date(isoTime1)
+                    map.set(fromHour,d1)
 
-                  // const b2 = [...map2.values()];
+                  const b = [...map.values()];
 
 
-                  // const f = b.map((x,i)=>{
-                  //   return g = (x-b2[i])/ (1000 * 60 * 60)
+                  const f = b2.map((x,i)=>{
+                    return g = (x-b[i])/ (1000 * 60 * 60)
 
-                  // })
-
-                  // console.log(f);
+                  })
 
 
 
@@ -198,17 +188,13 @@ const run =async ()=>{
                   flightName = match['Flight name'];
                   flightRevenue = match.Revenue;
                   flightCost = match.Cost
-                  // createPDF(indexFile,flightID,flightName,flightCaptain,totalCustomer,flightRevenue,flightCost,from,to)
+                  createPDF(indexFile,flightID,flightName,flightCaptain,totalCustomer,flightRevenue,flightCost,from,to,f)
                   indexFile++;
 
                 }
           });
 
-
-
         }
-          
-          
           
 
 run()

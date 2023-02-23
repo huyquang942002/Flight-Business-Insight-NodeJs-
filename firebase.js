@@ -8,12 +8,12 @@ class fireStoreClient {
         })
     }
 
-    async setID(collection,data){
+    async setFlightID(collection,data){
         const docRef = this.firestore.collection(collection).doc(data.ID)
         await docRef.set(data)
     }
 
-    async getID(collection,data){
+    async getFlightID(collection,data){
         const docRef = this.firestore.collection(collection).doc(data.ID)
         const doc = await docRef.get()
         return doc.data();

@@ -20,25 +20,31 @@ class fireStoreClient {
     }
 
     async setCity(collection,data){
-        const docRef = this.firestore.collection(collection).doc(data['Short name city'])
+        const docRef = this.firestore.collection(collection).doc(data['City'])
         await docRef.set(data)
     }
 
-    async getCity(collection,data){
-        const docRef = this.firestore.collection(collection).doc(data['Short name city'])
+    async getCityFrom(collection,data){
+        const docRef = this.firestore.collection(collection).doc(data['From'])
         const doc = await docRef.get()
-        return JSON.stringify(doc.data())
+        return doc.data()
+    }
+
+    async getCityTo(collection,data){
+        const docRef = this.firestore.collection(collection).doc(data['To'])
+        const doc = await docRef.get()
+        return doc.data()
     }
 
     async setAud(collection,data){
-        const docRef = this.firestore.collection(collection).doc(data.Currency)
+        const docRef = this.firestore.collection(collection).doc(data['Currency'])
         await docRef.set(data)
     }
 
     async getAud(collection,data){
-        const docRef = this.firestore.collection(collection).doc(data.Currency)
+        const docRef = this.firestore.collection(collection).doc(data['Currency Unit'])
         const doc = await docRef.get()
-        return JSON.stringify(doc.data())
+        return doc.data()
     }
 
     

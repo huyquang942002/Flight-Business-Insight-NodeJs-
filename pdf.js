@@ -2,7 +2,7 @@ const XLSX = require("xlsx");
 const moment = require("moment");
 const firebase = require("./firebase.js");
 const excel = XLSX.readFile("./Data/excel.xlsx");
-const pdfGen = require("./pdfGen.js");
+const create = require("./createPDF.js");
 
 const formatNum = (num) => {
   return Math.round(num);
@@ -54,21 +54,21 @@ const runDailyPDF = async () => {
 
   const dataExcel = XLSX.utils.sheet_to_json(excel.Sheets[excel.SheetNames[0]]);
   
-  for (const x of dataExcel) {
+  for (const item of dataExcel) {
     const promiseID = new Promise((resolve, reject) => {
-      resolve(firebase.getFlightID("FlightID", x));
+      resolve(firebase.getFlightID("FlightID", item));
     });
 
     const promiseAUD = new Promise((resolve, reject) => {
-      resolve(firebase.getAud("AUD Convert", x));
+      resolve(firebase.getAud("AUD Convert", item));
     });
 
     const promiseCityFrom = new Promise((resolve, reject) => {
-      resolve(firebase.getCityFrom("City", x));
+      resolve(firebase.getCityFrom("City", item));
     });
 
     const promiseCityTo = new Promise((resolve, reject) => {
-      resolve(firebase.getCityTo("City", x));
+      resolve(firebase.getCityTo("City", item));
     });
 
     const getAsync = async () => {
@@ -76,18 +76,18 @@ const runDailyPDF = async () => {
       const aud = await promiseAUD;
       const cityFrom = await promiseCityFrom;
       const cityTo = await promiseCityTo;
-      let pdfStart = `${x["Time From"]} ${date(x["Date from"])}`;
-      let pdfEnd = `${x["Time To"]} ${date(x["Date to"])}`;
-      const pdfTime = timeFlight(x);
-      let customer = x["Total customer"];
-      let pdfRev = formatNumAUD(formatNum(x.Revenue * aud["AUD convert"]));
-      let pdfCost = formatNumAUD(formatNum(x.Cost * aud["AUD convert"]));
+      let pdfStart = `${item["Time From"]} ${date(item["Date from"])}`;
+      let pdfEnd = `${item["Time To"]} ${date(item["Date to"])}`;
+      const pdfTime = timeFlight(item);
+      let customer = item["Total customer"];
+      let pdfRev = formatNumAUD(formatNum(item.Revenue * aud["AUD convert"]));
+      let pdfCost = formatNumAUD(formatNum(item.Cost * aud["AUD convert"]));
       let total = (pdfRev - pdfCost).toFixed(3);
       let pdfFrom = cityFrom.City + ", " + cityFrom["Country"];
       let pdfTo = cityTo.City + ", " + cityTo["Country"];
 
       index++;
-      pdfGen.dailyPDF(
+      create.dailyPDF(
         flight.ID,
         index,
         flight.Captain,

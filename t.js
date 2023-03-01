@@ -1,10 +1,11 @@
 const XLSX = require("xlsx");
-const moment = require("moment");
-const firebase = require("./firebase.js");
 const excel = XLSX.readFile("./Data/excel.xlsx");
-const create = require("./createPDF.js");
-
+const pdf = require("./pdf.js");
 const dataExcel = XLSX.utils.sheet_to_json(excel.Sheets[excel.SheetNames[0]]);
+const firebase = require("./firebase.js");
+const createPDF = require("./createPDF.js")
+
+
 
 const week1319 = [];
 const week20 = [];
@@ -44,13 +45,13 @@ const getMostAir = (items) => {
     }
   }
   return { ID: `${max}` };
-}
+};
 
 const getMostFrom = (items) => {
   const count = {};
 
   items.forEach((item) => {
-    const { From } = item
+    const { From } = item;
     if (count[From]) {
       count[From]++;
     } else {
@@ -68,58 +69,72 @@ const getMostFrom = (items) => {
   return { From: `${max}` };
 };
 
-const getMostTo = (items)=>{
-    const count = {};
-    for(const item of items){
-        const { To } = item
-        if(count[To]){
-            count[To]++
-        }else{
-            count[To] = 1
-        }
+const getMostTo = (items) => {
+  const count = {};
+  for (const item of items) {
+    const { To } = item;
+    if (count[To]) {
+      count[To]++;
+    } else {
+      count[To] = 1;
     }
-    let max = ''
-    let temp = 0
-    for(let key in count){
-        if(count[key]>temp){
-            max = key
-            key = count[key]
-        }
+  }
+  let max = "";
+  let temp = 0;
+  for (let key in count) {
+    if (count[key] > temp) {
+      max = key;
+      key = count[key];
     }
-    return { To: `${max}` };
-}
+  }
+  return { To: `${max}` };
+};
 
-const getTotal = (array)=>{
-    let a = 0;
-    for(let arr of array){
-         a = a + arr['Total customer']
-    }
-    return a
-}
+const getTotal = (array) => {
+  let a = 0;
+  for (let arr of array) {
+    a = a + arr["Total customer"];
+  }
+  return a;
+};
 
-
+const getTime = (array) => {
+  let a = 0;
+  for (const item of array) {
+    const time = pdf.timeFlight(item);
+    time.forEach((x) => {
+      a = a + x;
+    });
+  }
+  return a;
+};
 
 const run = async () => {
+  const promiseID = new Promise((resolve, reject) => {
+    resolve(firebase.getFlightID("FlightID", getMostAir(week1319)));
+  });
+  const flight = await promiseID;
+  
+
+  const promiseCityFrom = new Promise((resolve, reject) => {
+    resolve(firebase.getCityFrom("City", getMostFrom(week1319)));
+  });
+  const cityFrom = await promiseCityFrom;
+
+  const promiseCityTo = new Promise((resolve, reject) => {
+    resolve(firebase.getCityTo("City", getMostTo(week1319)));
+  });
+  const cityTo = await promiseCityTo;
+  const cityTo1 = cityTo.City + " , " + cityTo.Country
+
+  const totalCustomer = getTotal(week1319);
+
+  const timeFlight = getTime(week1319);
+  const avgTime = timeFlight / week1319.length;
 
 
-  // const promiseID = new Promise((resolve, reject) => {
-  //     resolve(firebase.getFlightID("FlightID", getMostAir(week1319)));
-  // });
-  // const flight = await promiseID
-
-
-//   const promiseCityFrom = new Promise((resolve, reject) => {
-//     resolve(firebase.getCityFrom("City", getMostFrom(week1319)));
-//   });
-//   const cityFrom = await promiseCityFrom;
-
-//   const promiseCityTo = new Promise((resolve, reject) => {
-//       resolve(firebase.getCityTo("City", getMostTo(week1319)));
-//   });
-//   const cityTo = await promiseCityTo;
-
-    // const totalCustomer =  getTotal(week1319)
-    // console.log(totalCustomer);
+  createPDF.weekPDF(flight['Flight name'],totalCustomer,timeFlight,avgTime,cityFrom.Country,cityTo1)
+  
 };
 
 run();

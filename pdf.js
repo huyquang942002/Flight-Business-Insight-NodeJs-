@@ -108,3 +108,7 @@ const runDailyPDF = async () => {
 };
 
 runDailyPDF();
+
+module.exports = {
+  timeFlight
+}

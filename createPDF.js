@@ -65,9 +65,9 @@ let dailyPDF = (
   }
 };
 
-let weekPDF = (flight,totalCustomer,timeFlight,avgTime,cityFrom,cityTo) => {
+let weekPDF = (flight,totalCustomer,timeFlight,avgTime,cityFrom,cityTo,title) => {
   const doccument = new PDFDocument({size: 'A4'});
-  doccument.pipe(fs.createWriteStream(`WeeklyReports/13-19.pdf`));
+  doccument.pipe(fs.createWriteStream(`WeeklyReports/${title}.pdf`));
   // Add another page
   doccument.font('Helvetica')
   doccument
@@ -77,7 +77,7 @@ let weekPDF = (flight,totalCustomer,timeFlight,avgTime,cityFrom,cityTo) => {
       width: 190
     })
     .fontSize(15)
-    .text("Mar 13 , 2021 - Mar 19 , 2021",200,90)
+    .text(`${title}`,200,90)
     .fontSize(10.5)
     .fillColor('#000000')
     .text('Flights are recorded on a daily basis, and are completed based on analyst Nong Quang Huy, any' ,
@@ -94,7 +94,6 @@ let weekPDF = (flight,totalCustomer,timeFlight,avgTime,cityFrom,cityTo) => {
     .list(myFlightInfo, 36, 180)
     doccument
   .image('images/logo.png',330,150)
-  // .image('Assets/barChart.png',-30,275)
     doccument.end();
 }
 

@@ -1,26 +1,62 @@
 const XLSX = require("xlsx");
 const excel = XLSX.readFile("./Data/excel.xlsx");
+const moment = require("moment");
 const pdf = require("./pdf.js");
 const dataExcel = XLSX.utils.sheet_to_json(excel.Sheets[excel.SheetNames[0]]);
 const firebase = require("./firebase.js");
 const createPDF = require("./createPDF.js")
 
-
-
 const week1319 = [];
 const week20 = [];
 
-dataExcel.forEach((item) => {
-  const date1319 = new Date("3/20/2021");
-  const date = new Date((item["Date to"] - (25567 + 1)) * 86400 * 1000);
-  const dateFormat = date.toLocaleDateString();
-  const dateReal = new Date(dateFormat);
-  if (dateReal < date1319) {
+const sortWeek = (data)=>{
+
+data.forEach((item) => {
+  if (item['Date to'] < 44275) {
     week1319.push(item);
   } else {
     week20.push(item);
   }
 });
+}
+
+sortWeek(dataExcel)
+
+
+const dataChart = (items)=>{
+
+  const arr = {}
+
+  for(const item of items){
+    const date = item['Date to']
+    if(!arr[date]){
+      arr[date] = {
+        Revenue : 0,
+        Cost : 0
+      }
+    }
+    arr[date].Revenue += item.Revenue
+    arr[date].Cost += item.Cost
+  }
+
+  const result = []
+
+  for(const key in arr){
+
+    const date = moment("1900-01-01")
+    .add(key - 2, "days")
+    .format("MM/DD/YYYY");
+
+    const value = arr[key]
+    let revenue = value.Revenue
+    let cost = value.Cost
+    result.push({Revenue : revenue , Cost : cost , 'Date to' : date})
+  }
+  console.log(result);
+}
+
+dataChart(week1319)
+
 
 const getMostAir = (items) => {
   const idCounts = {};
@@ -109,7 +145,7 @@ const getTime = (array) => {
   return a;
 };
 
-const run = async () => {
+const runWeek1319 = async () => {
   const promiseID = new Promise((resolve, reject) => {
     resolve(firebase.getFlightID("FlightID", getMostAir(week1319)));
   });
@@ -130,11 +166,45 @@ const run = async () => {
   const totalCustomer = getTotal(week1319);
 
   const timeFlight = getTime(week1319);
-  const avgTime = timeFlight / week1319.length;
+  const avgTime = Math.round(timeFlight / week1319.length);
+  
+  const title = "Mar 13,2021 - Mar 19,2021"
 
 
-  createPDF.weekPDF(flight['Flight name'],totalCustomer,timeFlight,avgTime,cityFrom.Country,cityTo1)
+  createPDF.weekPDF(flight['Flight name'],totalCustomer,timeFlight,avgTime,cityFrom.Country,cityTo1,title)
   
 };
 
-run();
+runWeek1319();
+
+const runWeek20 = async () => {
+  const promiseID = new Promise((resolve, reject) => {
+    resolve(firebase.getFlightID("FlightID", getMostAir(week20)));
+  });
+  const flight = await promiseID;
+  
+
+  const promiseCityFrom = new Promise((resolve, reject) => {
+    resolve(firebase.getCityFrom("City", getMostFrom(week20)));
+  });
+  const cityFrom = await promiseCityFrom;
+
+  const promiseCityTo = new Promise((resolve, reject) => {
+    resolve(firebase.getCityTo("City", getMostTo(week20)));
+  });
+  const cityTo = await promiseCityTo;
+  const cityTo1 = cityTo.City + " , " + cityTo.Country
+
+  const totalCustomer = getTotal(week20);
+
+  const timeFlight = getTime(week20);
+  const avgTime = Math.round(timeFlight / week20.length);
+
+  const title = "Mar 20,2021 - Mar 26,2021"
+
+
+  createPDF.weekPDF(flight['Flight name'],totalCustomer,timeFlight,avgTime,cityFrom.Country,cityTo1,title)
+  
+};
+
+runWeek20();

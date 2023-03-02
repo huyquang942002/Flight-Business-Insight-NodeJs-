@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@google-cloud/firestore": "^6.4.2",
+    "chart.js": "^4.2.1",
     "csv-parser": "^3.0.0",
     "firebase": "^9.17.1",
     "moment": "^2.29.4",

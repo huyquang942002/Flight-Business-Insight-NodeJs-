@@ -1,62 +1,63 @@
 const XLSX = require("xlsx");
 const excel = XLSX.readFile("./Data/excel.xlsx");
 const moment = require("moment");
-const pdf = require("./pdf.js");
+const QuickChart = require('quickchart-js');
+const pdf = require("./daily.js");
 const dataExcel = XLSX.utils.sheet_to_json(excel.Sheets[excel.SheetNames[0]]);
 const firebase = require("./firebase.js");
-const createPDF = require("./createPDF.js")
+const createPDF = require("./createPDF.js");
+const chart = require("./chart.js")
 
 const week1319 = [];
 const week20 = [];
 
-const sortWeek = (data)=>{
-
-data.forEach((item) => {
-  if (item['Date to'] < 44275) {
-    week1319.push(item);
-  } else {
-    week20.push(item);
-  }
-});
-}
-
-sortWeek(dataExcel)
-
-
-const dataChart = (items)=>{
-
-  const arr = {}
-
-  for(const item of items){
-    const date = item['Date to']
-    if(!arr[date]){
-      arr[date] = {
-        Revenue : 0,
-        Cost : 0
-      }
+// Lấy data từ ngày 13-19
+// Lấy data từ ngày 20 trở đi
+const sortWeek = (data) => {
+  data.forEach((item) => {
+    if (item["Date to"] < 44275) {
+      week1319.push(item);
+    } else {
+      week20.push(item);
     }
-    arr[date].Revenue += item.Revenue
-    arr[date].Cost += item.Cost
+  });
+};
+
+sortWeek(dataExcel);
+
+// Tạo biểu đồ theo tuần
+const dataChart = (items) => {
+  const arr = {};
+
+  for (const item of items) {
+    const date = item["Date to"];
+    if (!arr[date]) {
+      arr[date] = {
+        Revenue: 0,
+        Cost: 0,
+      };
+    }
+    arr[date].Revenue += item.Revenue;
+    arr[date].Cost += item.Cost;
   }
 
-  const result = []
+  const sortWeek1319 = [];
 
-  for(const key in arr){
-
+  for (const key in arr) {
     const date = moment("1900-01-01")
-    .add(key - 2, "days")
-    .format("MM/DD/YYYY");
+      .add(key - 2, "days")
+      .format("MM/DD/YYYY");
 
-    const value = arr[key]
-    let revenue = value.Revenue
-    let cost = value.Cost
-    result.push({Revenue : revenue , Cost : cost , 'Date to' : date})
+    const value = arr[key];
+    let revenue = value.Revenue;
+    let cost = value.Cost;
+    sortWeek1319.push({ Revenue: revenue, Cost: cost, "Date to": date });
   }
-  console.log(result);
-}
+  chart.barChart(sortWeek1319)
+};
 
-dataChart(week1319)
-
+dataChart(week1319);
+dataChart(week20);
 
 const getMostAir = (items) => {
   const idCounts = {};
@@ -145,12 +146,13 @@ const getTime = (array) => {
   return a;
 };
 
+
+// Tạo file pdf theo tuần
 const runWeek1319 = async () => {
   const promiseID = new Promise((resolve, reject) => {
     resolve(firebase.getFlightID("FlightID", getMostAir(week1319)));
   });
   const flight = await promiseID;
-  
 
   const promiseCityFrom = new Promise((resolve, reject) => {
     resolve(firebase.getCityFrom("City", getMostFrom(week1319)));
@@ -161,28 +163,35 @@ const runWeek1319 = async () => {
     resolve(firebase.getCityTo("City", getMostTo(week1319)));
   });
   const cityTo = await promiseCityTo;
-  const cityTo1 = cityTo.City + " , " + cityTo.Country
+  const cityTo1 = cityTo.City + " , " + cityTo.Country;
 
   const totalCustomer = getTotal(week1319);
 
   const timeFlight = getTime(week1319);
   const avgTime = Math.round(timeFlight / week1319.length);
-  
-  const title = "Mar 13,2021 - Mar 19,2021"
 
+  const title = "Mar 13,2021 - Mar 19,2021";
 
-  createPDF.weekPDF(flight['Flight name'],totalCustomer,timeFlight,avgTime,cityFrom.Country,cityTo1,title)
-  
+  createPDF.weekPDF(
+    flight["Flight name"],
+    totalCustomer,
+    timeFlight,
+    avgTime,
+    cityFrom.Country,
+    cityTo1,
+    title
+  );
 };
 
 runWeek1319();
 
+
+// Tạo file pdf theo tuần
 const runWeek20 = async () => {
   const promiseID = new Promise((resolve, reject) => {
     resolve(firebase.getFlightID("FlightID", getMostAir(week20)));
   });
   const flight = await promiseID;
-  
 
   const promiseCityFrom = new Promise((resolve, reject) => {
     resolve(firebase.getCityFrom("City", getMostFrom(week20)));
@@ -193,18 +202,24 @@ const runWeek20 = async () => {
     resolve(firebase.getCityTo("City", getMostTo(week20)));
   });
   const cityTo = await promiseCityTo;
-  const cityTo1 = cityTo.City + " , " + cityTo.Country
+  const cityTo1 = cityTo.City + " , " + cityTo.Country;
 
   const totalCustomer = getTotal(week20);
 
   const timeFlight = getTime(week20);
   const avgTime = Math.round(timeFlight / week20.length);
 
-  const title = "Mar 20,2021 - Mar 26,2021"
+  const title = "Mar 20,2021 - Mar 23,2021";
 
-
-  createPDF.weekPDF(flight['Flight name'],totalCustomer,timeFlight,avgTime,cityFrom.Country,cityTo1,title)
-  
+  createPDF.weekPDF(
+    flight["Flight name"],
+    totalCustomer,
+    timeFlight,
+    avgTime,
+    cityFrom.Country,
+    cityTo1,
+    title
+  );
 };
 
 runWeek20();

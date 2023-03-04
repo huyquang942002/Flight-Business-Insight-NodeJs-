@@ -65,7 +65,7 @@ let dailyPDF = (
   }
 };
 
-let weekPDF = (
+let weekPDF1319 = (
   flight,
   totalCustomer,
   timeFlight,
@@ -108,16 +108,71 @@ let weekPDF = (
   doccument.fontSize(14).list(myFlightInfo, 36, 180);
   doccument
     .image("images/logo.png", 330, 150)
-    .image(`images/${title}.png`, 40, 350);
+    .image(`images/${title}.png`, 40, 280)
+    .image(`images/pieChart1319.png`,40,550)
+  // doccument
+  //   .fontSize(14)
+  //   .text("Daily profit analysis chart",235,570,{
+  //     width:180
+  //   })
+  doccument.end();
+};
+
+let weekPDF20 = (
+  flight,
+  totalCustomer,
+  timeFlight,
+  avgTime,
+  cityFrom,
+  cityTo,
+  title
+) => {
+  const doccument = new PDFDocument({ size: "A4" });
+  doccument.pipe(fs.createWriteStream(`WeeklyReports/${title}.pdf`));
+  // Add another page
+  doccument.font("Helvetica");
   doccument
-    .fontSize(14)
-    .text("Daily profit analysis chart",235,670,{
-      width:180
+    .fontSize(24)
+    .fillColor("#30669A")
+    .text("Flight daily report", 200, 54, {
+      width: 190,
     })
+    .fontSize(15)
+    .text(`${title}`, 200, 90)
+    .fontSize(10.5)
+    .fillColor("#000000")
+    .text(
+      "Flights are recorded on a daily basis, and are completed based on analyst Nong Quang Huy, any",
+      40,
+      120
+    )
+    .text("questions please contact email: huywocker92016@gmail.com", {
+      align: "center",
+    });
+
+  let myFlightInfo = [
+    `Most used aircraft: ${flight}`,
+    `Total customers for a week: ${totalCustomer}`,
+    `Total flight time: ${timeFlight} hours`,
+    `Avarage flight time: ${avgTime} hours`,
+    `Places to go the most: ${cityFrom}`,
+    `Destination to go the most: ${cityTo}`,
+  ];
+  doccument.fontSize(14).list(myFlightInfo, 36, 180);
+  doccument
+    .image("images/logo.png", 330, 150)
+    .image(`images/${title}.png`, 40, 280)
+    .image(`images/pieChart20.png`,40,550)
+  // doccument
+  //   .fontSize(14)
+  //   .text("Daily profit analysis chart",235,570,{
+  //     width:180
+  //   })
   doccument.end();
 };
 
 module.exports = {
   dailyPDF,
-  weekPDF,
+  weekPDF1319,
+  weekPDF20
 };

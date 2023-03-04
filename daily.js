@@ -76,6 +76,7 @@ const runDailyPDF = async () => {
       const aud = await promiseAUD;
       const cityFrom = await promiseCityFrom;
       const cityTo = await promiseCityTo;
+      // console.log(cityTo);
       let pdfStart = `${item["Time From"]} ${date(item["Date from"])}`;
       let pdfEnd = `${item["Time To"]} ${date(item["Date to"])}`;
       const pdfTime = timeFlight(item);

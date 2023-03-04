@@ -3,12 +3,18 @@ const excel = XLSX.readFile("./Data/excel.xlsx");
 const moment = require("moment");
 const QuickChart = require('quickchart-js');
 const pdf = require("./daily.js");
-const dataExcel = XLSX.utils.sheet_to_json(excel.Sheets[excel.SheetNames[0]]);
 const firebase = require("./firebase.js");
 const createPDF = require("./createPDF.js");
 const chart = require("./chart.js")
 
+
+const dataExcel = XLSX.utils.sheet_to_json(excel.Sheets[excel.SheetNames[0]]);
+
+
+// data from day 13 - day19
 const week1319 = [];
+
+//data from day 20 onwards
 const week20 = [];
 
 // Lấy data từ ngày 13-19
@@ -25,8 +31,8 @@ const sortWeek = (data) => {
 
 sortWeek(dataExcel);
 
-// Tạo biểu đồ theo tuần
-const dataChart = (items) => {
+// Tạo biểu đồ Bar theo tuần
+const barChart = (items) => {
   const arr = {};
 
   for (const item of items) {
@@ -56,8 +62,88 @@ const dataChart = (items) => {
   chart.barChart(sortWeek1319)
 };
 
-dataChart(week1319);
-dataChart(week20);
+barChart(week1319);
+barChart(week20);
+
+const pieChart1319 = async (items) => {
+  const temp = {};
+
+  for (const item of items) {
+    const promiseCityTo = new Promise((resolve, reject) => {
+      resolve(firebase.getCityTo("City", item));
+    });
+
+    const cityTo = await promiseCityTo;
+    
+    const countCountry = cityTo.Country;
+    const countCity = cityTo.City;
+    if (!temp[countCountry]) {
+      temp[countCountry] = {
+        nameCountry : " ",
+        nameCity: " ",
+        Value : 0,
+      }
+    }
+    temp[countCountry].nameCountry = countCountry
+    temp[countCountry].nameCity = countCity
+    temp[countCountry].Value++
+  }
+
+  let arr = []
+
+  for(const key in temp){
+    const value = temp[key]
+    let destination = `${value.nameCity} , ${value.nameCountry}`
+    arr.push({
+      des : destination,
+      appear : value.Value
+    })
+  }
+  chart.pieChart1319(arr)
+};
+
+pieChart1319(week1319);
+
+const pieChart20 = async (items) => {
+  const temp = {};
+
+  for (const item of items) {
+    const promiseCityTo = new Promise((resolve, reject) => {
+      resolve(firebase.getCityTo("City", item));
+    });
+
+    const cityTo = await promiseCityTo;
+    
+    const countCountry = cityTo.Country;
+    const countCity = cityTo.City;
+    if (!temp[countCountry]) {
+      temp[countCountry] = {
+        nameCountry : " ",
+        nameCity: " ",
+        Value : 0,
+      }
+    }
+    temp[countCountry].nameCountry = countCountry
+    temp[countCountry].nameCity = countCity
+    temp[countCountry].Value++
+  }
+
+  let arr = []
+
+  for(const key in temp){
+    const value = temp[key]
+    let destination = `${value.nameCity} , ${value.nameCountry}`
+    arr.push({
+      des : destination,
+      appear : value.Value
+    })
+  }
+  chart.pieChart20(arr)
+};
+
+pieChart20(week20);
+
+
 
 const getMostAir = (items) => {
   const idCounts = {};
@@ -172,7 +258,7 @@ const runWeek1319 = async () => {
 
   const title = "Mar 13,2021 - Mar 19,2021";
 
-  createPDF.weekPDF(
+  createPDF.weekPDF1319(
     flight["Flight name"],
     totalCustomer,
     timeFlight,
@@ -211,7 +297,7 @@ const runWeek20 = async () => {
 
   const title = "Mar 20,2021 - Mar 23,2021";
 
-  createPDF.weekPDF(
+  createPDF.weekPDF20(
     flight["Flight name"],
     totalCustomer,
     timeFlight,

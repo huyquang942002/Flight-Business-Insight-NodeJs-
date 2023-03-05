@@ -71,12 +71,10 @@ const runDailyPDF = async () => {
       resolve(firebase.getCityTo("City", item));
     });
 
-    const getAsync = async () => {
       const flight = await promiseID;
       const aud = await promiseAUD;
       const cityFrom = await promiseCityFrom;
       const cityTo = await promiseCityTo;
-      // console.log(cityTo);
       let pdfStart = `${item["Time From"]} ${date(item["Date from"])}`;
       let pdfEnd = `${item["Time To"]} ${date(item["Date to"])}`;
       const pdfTime = timeFlight(item);
@@ -103,8 +101,6 @@ const runDailyPDF = async () => {
         pdfStart,
         pdfEnd
       );
-    };
-    getAsync();
   }
 };
 

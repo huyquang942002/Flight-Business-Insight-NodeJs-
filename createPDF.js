@@ -109,7 +109,7 @@ let weekPDF1319 = (
   doccument
     .image("images/logo.png", 330, 150)
     .image(`images/${title}.png`, 40, 280)
-    .image(`images/pieChart1319.png`,40,550)
+    .image(`images/pieChart1319.png`,40,500)
   // doccument
   //   .fontSize(14)
   //   .text("Daily profit analysis chart",235,570,{
@@ -162,7 +162,7 @@ let weekPDF20 = (
   doccument
     .image("images/logo.png", 330, 150)
     .image(`images/${title}.png`, 40, 280)
-    .image(`images/pieChart20.png`,40,550)
+    .image(`images/pieChart20.png`,40,500)
   // doccument
   //   .fontSize(14)
   //   .text("Daily profit analysis chart",235,570,{

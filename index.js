@@ -6,7 +6,7 @@ const FlightID = XLSX.readFile("./Data/FlightID.csv");
 const city = XLSX.readFile("./Data/City.csv");
 const aud = XLSX.readFile("./Data/AUD convert.csv");
 
-const run = async () => {
+const setDatafirebase = async () => {
 
   const FlightID1 = XLSX.utils.sheet_to_json(FlightID.Sheets[FlightID.SheetNames]);
 
@@ -30,4 +30,4 @@ const run = async () => {
 
 };
 
-run();
+setDatafirebase();

@@ -45,7 +45,7 @@ const barChart = async(data)=>{
 
   
   chart.setWidth(500)
-  chart.setHeight(300);
+  chart.setHeight(250);
   
   chart.setConfig(`{
   type: 'bar',
@@ -86,6 +86,11 @@ const pieChart1319 = (item)=>{
   
   // Tạo biểu đồ pie
   const chart = new QuickChart();
+
+  chart.setWidth(500)
+  chart.setHeight(300);
+
+
   chart.setConfig({
     type: "pie",
     data: {
@@ -124,6 +129,10 @@ const pieChart20 = (item)=>{
   
   // Tạo biểu đồ pie
   const chart = new QuickChart();
+
+  chart.setWidth(500)
+  chart.setHeight(300);
+  
   chart.setConfig({
     type: "pie",
     data: {
